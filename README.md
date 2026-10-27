@@ -31,7 +31,7 @@ Constitutional preambles serve as a window into a nation’s founding values and
 3. **Clustering**
    - Algorithm: `KMeans`
    - Number of clusters determined via **Elbow** and **Silhouette** methods.
-   - Chosen: **6 clusters**
+   - Chosen: **7 clusters**
 
 4. **Dimensionality Reduction**
    - Visualized in 2D space using **PCA**.
