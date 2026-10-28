@@ -1,0 +1,159 @@
+Country,orig_cluster,status,extracted_words,short_flag
+Afghanistan,2,preamble_ok,255,False
+Albania,1,preamble_ok,114,False
+Algeria,2,preamble_ok,1307,False
+Andorra,5,preamble_ok,255,False
+Angola,4,preamble_ok,580,False
+Antigua and Barbuda,4,preamble_ok,274,False
+Argentina,0,preamble_ok,100,False
+Armenia,1,preamble_ok,78,False
+Australia,4,preamble_cut,70,False
+Azerbaijan,3,preamble_ok,186,False
+Bahamas,4,preamble_ok,161,False
+Bahrain,2,preamble_ok,742,False
+Bangladesh,3,preamble_ok,205,False
+Barbados,4,preamble_ok,358,False
+Belarus,1,preamble_ok,108,False
+Belize,4,preamble_ok,486,False
+Benin,6,preamble_ok,449,False
+Bhutan,3,preamble_ok,112,False
+Bolivia,0,preamble_ok,338,False
+Bosnia and Herz.,5,preamble_ok,188,False
+Brazil,0,preamble_ok,77,False
+Brunei,2,preamble_ok,270,False
+Bulgaria,1,preamble_ok,89,False
+Burkina Faso,6,preamble_ok,273,False
+Burundi,6,preamble_ok,419,False
+Cambodia,3,preamble_ok,120,False
+Cameroon,6,preamble_ok,835,False
+Canada,4,preamble_cut,148,False
+Cabo Verde,4,preamble_ok,610,False
+Central African Rep.,6,preamble_ok,427,False
+Chad,6,preamble_ok,456,False
+Chile,0,preamble_ok,83,False
+China,3,preamble_ok,1160,False
+Colombia,0,preamble_ok,84,False
+Comoros,4,preamble_ok,408,False
+Congo,6,preamble_ok,372,False
+Dem. Rep. Congo,6,preamble_ok,299,False
+Costa Rica,0,preamble_ok,33,True
+Côte d'Ivoire,6,preamble_ok,163,False
+Croatia,5,preamble_ok,637,False
+Cuba,0,preamble_cut,456,False
+Czechia,5,preamble_ok,164,False
+Djibouti,6,preamble_ok,134,False
+Dominica,4,preamble_ok,245,False
+Dominican Rep.,0,preamble_ok,141,False
+Ecuador,0,preamble_ok,183,False
+Egypt,2,preamble_ok,1281,False
+El Salvador,0,preamble_ok,95,False
+Eq. Guinea,6,preamble_ok,119,False
+Eritrea,6,preamble_ok,406,False
+Estonia,1,preamble_ok,57,True
+Ethiopia,6,preamble_ok,247,False
+Fiji,4,preamble_ok,160,False
+France,4,preamble_cut,101,False
+Gabon,6,preamble_ok,151,False
+Gambia,6,preamble_ok,330,False
+Georgia,1,preamble_ok,72,False
+Germany,5,preamble_ok,85,False
+Ghana,6,preamble_ok,121,False
+Grenada,4,preamble_ok,235,False
+Guatemala,0,preamble_ok,157,False
+Guinea,6,preamble_ok,252,False
+Guinea-Bissau,0,preamble_ok,344,False
+Guyana,4,preamble_ok,406,False
+Haiti,4,preamble_ok,254,False
+Honduras,0,preamble_ok,114,False
+Hungary,5,preamble_ok,685,False
+Iceland,1,preamble_ok,141,False
+India,1,preamble_ok,85,False
+Indonesia,3,preamble_ok,224,False
+Iran,2,preamble_ok,3223,False
+Iraq,2,preamble_ok,566,False
+Ireland,0,preamble_ok,122,False
+Japan,3,preamble_ok,298,False
+Kazakhstan,1,preamble_ok,59,True
+Kenya,6,preamble_ok,153,False
+Kiribati,4,preamble_ok,98,False
+Kosovo,5,preamble_ok,151,False
+Kuwait,2,preamble_ok,165,False
+Kyrgyzstan,1,preamble_ok,103,False
+Laos,3,preamble_ok,385,False
+Lebanon,2,preamble_cut,262,False
+Liberia,6,preamble_ok,185,False
+Lithuania,5,preamble_ok,116,False
+North Macedonia,5,preamble_ok,251,False
+Madagascar,4,preamble_ok,490,False
+Malawi,6,preamble_ok,77,False
+Mali,6,preamble_ok,188,False
+Marshall Islands,4,preamble_ok,247,False
+Mauritania,6,preamble_ok,351,False
+Micronesia,4,preamble_ok,206,False
+Moldova,1,preamble_ok,183,False
+Mongolia,1,preamble_ok,79,False
+Montenegro,5,preamble_ok,175,False
+Morocco,2,preamble_ok,577,False
+Mozambique,6,preamble_ok,185,False
+Myanmar,3,preamble_ok,458,False
+Namibia,6,preamble_ok,259,False
+Nauru,0,preamble_ok,116,False
+Nepal,3,preamble_ok,228,False
+Nicaragua,0,preamble_ok,294,False
+Niger,6,preamble_ok,308,False
+Nigeria,6,preamble_ok,95,False
+North Korea,3,preamble_ok,553,False
+Pakistan,2,preamble_ok,425,False
+Panama,0,preamble_ok,43,True
+Papua New Guinea,4,preamble_ok,2011,False
+Paraguay,0,preamble_ok,53,True
+Peru,0,preamble_ok,33,True
+Philippines,3,preamble_ok,75,False
+Poland,5,preamble_ok,316,False
+Portugal,0,preamble_ok,182,False
+Russia,1,preamble_ok,124,False
+Rwanda,6,preamble_ok,409,False
+Saint Kitts and Nevis,0,preamble_ok,98,False
+Saint Lucia,4,preamble_ok,308,False
+Samoa,0,preamble_ok,168,False
+São Tomé and Principe,4,preamble_ok,451,False
+Senegal,6,preamble_ok,430,False
+Serbia,5,preamble_ok,95,False
+Seychelles,4,preamble_ok,376,False
+Slovakia,3,preamble_cut,118,False
+Slovenia,5,preamble_ok,68,False
+Solomon Is.,4,preamble_ok,201,False
+South Africa,6,preamble_ok,180,False
+South Korea,3,preamble_ok,218,False
+S. Sudan,2,preamble_ok,247,False
+Spain,0,preamble_ok,93,False
+Sri Lanka,3,preamble_ok,289,False
+Sudan,6,preamble_ok,220,False
+Suriname,4,preamble_cut,182,False
+eSwatini,6,preamble_ok,322,False
+Switzerland,5,preamble_ok,99,False
+Syria,2,preamble_ok,548,False
+Taiwan,3,preamble_ok,81,False
+Tajikistan,1,preamble_ok,70,False
+Tanzania,6,preamble_ok,143,False
+Thailand,3,preamble_ok,764,False
+Timor-Leste,3,preamble_ok,467,False
+Togo,6,preamble_ok,258,False
+Trinidad and Tobago,4,preamble_ok,259,False
+Tunisia,2,preamble_ok,494,False
+Turkey,3,preamble_ok,464,False
+Turkmenistan,4,preamble_ok,104,False
+Tuvalu,4,preamble_ok,696,False
+Uganda,6,preamble_ok,155,False
+Ukraine,1,preamble_ok,127,False
+United Arab Emirates,2,preamble_ok,338,False
+United Kingdom,4,preamble_ok,196,False
+United States of America,0,preamble_ok,52,True
+Uzbekistan,1,preamble_ok,106,False
+Vanuatu,4,preamble_ok,66,False
+Venezuela,0,preamble_ok,195,False
+Vietnam,3,preamble_ok,434,False
+Zambia,6,preamble_ok,197,False
+Zimbabwe,6,preamble_ok,208,False
+Libya,2,preamble_cut,210,False
+Palestine,2,preamble_cut,705,False
