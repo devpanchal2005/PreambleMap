@@ -1,0 +1,159 @@
+Country,status,extracted_words,orig_cluster,labels_A,labels_B,labels_C,labels_A_c,labels_B_c,labels_C_c
+Afghanistan,preamble_ok,255,2,5,4,4,6,1,3
+Albania,preamble_ok,114,1,2,4,5,0,1,6
+Algeria,preamble_ok,1307,2,6,5,4,1,3,2
+Andorra,preamble_ok,255,5,2,6,1,0,1,6
+Angola,preamble_ok,580,4,3,4,2,1,5,2
+Antigua and Barbuda,preamble_ok,274,4,0,1,2,5,4,5
+Argentina,preamble_ok,100,0,4,3,3,2,0,1
+Armenia,preamble_ok,78,1,5,4,5,6,1,6
+Australia,preamble_cut,70,4,0,1,0,5,4,5
+Azerbaijan,preamble_ok,186,3,5,4,6,6,5,0
+Bahamas,preamble_ok,161,4,0,1,1,5,4,5
+Bahrain,preamble_ok,742,2,6,5,4,3,3,3
+Bangladesh,preamble_ok,205,3,1,4,6,6,5,0
+Barbados,preamble_ok,358,4,0,1,1,5,4,5
+Belarus,preamble_ok,108,1,5,6,5,0,1,6
+Belize,preamble_ok,486,4,0,1,1,5,4,5
+Benin,preamble_ok,449,6,3,2,2,1,2,2
+Bhutan,preamble_ok,112,3,1,4,0,6,5,4
+Bolivia,preamble_ok,338,0,4,3,3,2,6,1
+Bosnia and Herz.,preamble_ok,188,5,2,6,5,0,1,6
+Brazil,preamble_ok,77,0,4,3,3,2,0,1
+Brunei,preamble_ok,270,2,1,4,6,3,3,3
+Bulgaria,preamble_ok,89,1,2,4,0,0,1,4
+Burkina Faso,preamble_ok,273,6,3,2,2,1,2,2
+Burundi,preamble_ok,419,6,3,2,2,1,2,2
+Cambodia,preamble_ok,120,3,1,0,6,6,6,0
+Cameroon,preamble_ok,835,6,3,2,2,1,2,2
+Canada,preamble_cut,148,4,0,1,1,5,4,5
+Cabo Verde,preamble_ok,610,4,4,3,3,2,3,1
+Central African Rep.,preamble_ok,427,6,3,2,2,1,2,2
+Chad,preamble_ok,456,6,3,2,2,1,2,2
+Chile,preamble_ok,83,0,4,3,0,2,0,4
+China,preamble_ok,1160,3,1,0,6,6,6,0
+Colombia,preamble_ok,84,0,4,3,3,2,0,1
+Comoros,preamble_ok,408,4,0,1,1,5,4,5
+Congo,preamble_ok,372,6,3,2,2,1,2,2
+Dem. Rep. Congo,preamble_ok,299,6,3,2,2,1,2,2
+Costa Rica,preamble_ok,33,0,4,3,3,2,0,4
+Côte d'Ivoire,preamble_ok,163,6,3,2,2,1,2,2
+Croatia,preamble_ok,637,5,2,6,5,0,1,6
+Cuba,preamble_cut,456,0,4,3,1,2,6,1
+Czechia,preamble_ok,164,5,2,6,5,0,1,6
+Djibouti,preamble_ok,134,6,3,2,2,1,2,2
+Dominica,preamble_ok,245,4,0,1,1,5,4,5
+Dominican Rep.,preamble_ok,141,0,4,3,3,2,0,1
+Ecuador,preamble_ok,183,0,4,3,3,2,0,1
+Egypt,preamble_ok,1281,2,6,5,4,3,3,3
+El Salvador,preamble_ok,95,0,4,3,3,2,0,1
+Eq. Guinea,preamble_ok,119,6,3,2,2,1,2,2
+Eritrea,preamble_ok,406,6,3,5,2,3,3,2
+Estonia,preamble_ok,57,1,4,4,3,2,5,1
+Ethiopia,preamble_ok,247,6,3,2,2,4,2,0
+Fiji,preamble_ok,160,4,0,1,0,5,4,5
+France,preamble_cut,101,4,6,4,1,1,4,5
+Gabon,preamble_ok,151,6,3,2,2,1,2,2
+Gambia,preamble_ok,330,6,3,2,2,4,2,2
+Georgia,preamble_ok,72,1,5,4,5,6,1,6
+Germany,preamble_ok,85,5,2,4,5,0,1,6
+Ghana,preamble_ok,121,6,3,2,0,4,2,4
+Grenada,preamble_ok,235,4,0,1,1,5,4,5
+Guatemala,preamble_ok,157,0,4,3,3,2,0,1
+Guinea,preamble_ok,252,6,3,2,2,1,2,2
+Guinea-Bissau,preamble_ok,344,0,4,3,3,2,0,1
+Guyana,preamble_ok,406,4,0,1,6,5,4,0
+Haiti,preamble_ok,254,4,0,1,1,5,4,5
+Honduras,preamble_ok,114,0,4,3,3,2,0,1
+Hungary,preamble_ok,685,5,2,6,5,0,1,6
+Iceland,preamble_ok,141,1,2,4,0,6,1,4
+India,preamble_ok,85,1,5,4,0,6,5,4
+Indonesia,preamble_ok,224,3,1,4,6,6,6,0
+Iran,preamble_ok,3223,2,6,5,4,3,3,3
+Iraq,preamble_ok,566,2,6,5,4,3,3,3
+Ireland,preamble_ok,122,0,3,4,0,4,5,4
+Japan,preamble_ok,298,3,1,0,6,6,5,0
+Kazakhstan,preamble_ok,59,1,5,4,5,6,1,6
+Kenya,preamble_ok,153,6,3,4,0,4,2,4
+Kiribati,preamble_ok,98,4,0,1,0,5,4,4
+Kosovo,preamble_ok,151,5,2,4,5,0,1,6
+Kuwait,preamble_ok,165,2,6,5,4,3,3,3
+Kyrgyzstan,preamble_ok,103,1,5,4,5,6,1,6
+Laos,preamble_ok,385,3,1,0,6,6,6,0
+Lebanon,preamble_cut,262,2,6,5,4,3,1,3
+Liberia,preamble_ok,185,6,3,2,0,4,2,4
+Lithuania,preamble_ok,116,5,2,6,5,0,1,6
+North Macedonia,preamble_ok,251,5,2,6,5,0,1,6
+Madagascar,preamble_ok,490,4,0,2,1,5,2,1
+Malawi,preamble_ok,77,6,3,2,0,4,2,4
+Mali,preamble_ok,188,6,3,2,2,1,2,2
+Marshall Islands,preamble_ok,247,4,0,1,0,5,4,0
+Mauritania,preamble_ok,351,6,6,5,2,1,2,2
+Micronesia,preamble_ok,206,4,0,1,0,5,4,5
+Moldova,preamble_ok,183,1,2,6,5,0,1,6
+Mongolia,preamble_ok,79,1,5,4,0,6,1,4
+Montenegro,preamble_ok,175,5,2,6,5,0,1,6
+Morocco,preamble_ok,577,2,6,5,4,3,3,3
+Mozambique,preamble_ok,185,6,3,2,2,4,2,2
+Myanmar,preamble_ok,458,3,1,0,6,6,6,0
+Namibia,preamble_ok,259,6,3,2,2,4,2,2
+Nauru,preamble_ok,116,0,0,4,0,5,5,4
+Nepal,preamble_ok,228,3,1,4,6,6,5,0
+Nicaragua,preamble_ok,294,0,4,3,3,2,0,1
+Niger,preamble_ok,308,6,3,2,2,1,2,2
+Nigeria,preamble_ok,95,6,3,2,2,4,2,2
+North Korea,preamble_ok,553,3,1,0,6,6,6,0
+Pakistan,preamble_ok,425,2,5,4,4,3,5,3
+Panama,preamble_ok,43,0,4,3,0,2,0,4
+Papua New Guinea,preamble_ok,2011,4,0,1,2,5,4,5
+Paraguay,preamble_ok,53,0,4,3,3,2,0,1
+Peru,preamble_ok,33,0,4,3,3,2,0,1
+Philippines,preamble_ok,75,3,1,4,0,6,5,4
+Poland,preamble_ok,316,5,2,6,5,0,1,6
+Portugal,preamble_ok,182,0,4,3,3,2,0,1
+Russia,preamble_ok,124,1,5,3,5,6,1,6
+Rwanda,preamble_ok,409,6,3,2,2,1,2,2
+Saint Kitts and Nevis,preamble_ok,98,0,0,1,1,5,4,5
+Saint Lucia,preamble_ok,308,4,0,1,2,5,4,5
+Samoa,preamble_ok,168,0,0,1,0,5,4,5
+São Tomé and Principe,preamble_ok,451,4,4,3,3,2,2,1
+Senegal,preamble_ok,430,6,3,2,2,1,2,2
+Serbia,preamble_ok,95,5,2,6,5,0,1,6
+Seychelles,preamble_ok,376,4,0,1,0,5,4,4
+Slovakia,preamble_cut,118,3,2,6,5,0,1,6
+Slovenia,preamble_ok,68,5,2,6,5,0,1,6
+Solomon Is.,preamble_ok,201,4,0,1,1,5,4,5
+South Africa,preamble_ok,180,6,3,2,0,4,2,4
+South Korea,preamble_ok,218,3,1,0,3,6,6,1
+S. Sudan,preamble_ok,247,2,3,5,2,3,3,0
+Spain,preamble_ok,93,0,4,3,3,2,0,1
+Sri Lanka,preamble_ok,289,3,1,4,6,5,5,0
+Sudan,preamble_ok,220,6,3,5,2,3,3,2
+Suriname,preamble_cut,182,4,4,3,3,5,6,1
+eSwatini,preamble_ok,322,6,3,2,0,4,2,4
+Switzerland,preamble_ok,99,5,2,4,5,0,1,6
+Syria,preamble_ok,548,2,6,5,4,3,3,3
+Taiwan,preamble_ok,81,3,1,4,0,6,5,4
+Tajikistan,preamble_ok,70,1,5,4,0,6,1,4
+Tanzania,preamble_ok,143,6,3,2,0,4,2,4
+Thailand,preamble_ok,764,3,1,0,6,3,6,3
+Timor-Leste,preamble_ok,467,3,1,0,6,5,6,0
+Togo,preamble_ok,258,6,3,2,2,1,2,2
+Trinidad and Tobago,preamble_ok,259,4,0,1,1,5,4,5
+Tunisia,preamble_ok,494,2,6,5,4,3,3,3
+Turkey,preamble_ok,464,3,5,4,5,6,5,3
+Turkmenistan,preamble_ok,104,4,5,4,0,6,5,4
+Tuvalu,preamble_ok,696,4,0,1,1,5,4,5
+Uganda,preamble_ok,155,6,3,2,0,4,2,4
+Ukraine,preamble_ok,127,1,5,6,5,0,1,6
+United Arab Emirates,preamble_ok,338,2,6,5,4,3,3,3
+United Kingdom,preamble_ok,196,4,0,1,1,5,4,5
+United States of America,preamble_ok,52,0,5,4,0,6,5,4
+Uzbekistan,preamble_ok,106,1,5,4,5,6,1,6
+Vanuatu,preamble_ok,66,4,0,1,0,5,4,4
+Venezuela,preamble_ok,195,0,4,3,3,2,0,1
+Vietnam,preamble_ok,434,3,1,0,6,6,6,0
+Zambia,preamble_ok,197,6,3,2,0,4,2,4
+Zimbabwe,preamble_ok,208,6,3,2,0,4,2,4
+Libya,preamble_cut,210,2,6,5,4,3,3,3
+Palestine,preamble_cut,705,2,6,5,4,3,3,3
