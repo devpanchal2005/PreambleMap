@@ -419,11 +419,12 @@ with tab_country:
 with tab_predict:
     st.subheader("Classify a Preamble Text")
 
-    acc_pct = f"{val_data['loo_accuracy'] * 100:.1f}"
-    top2_pct = f"{val_data['loo_top2_accuracy'] * 100:.1f}"
-
-    st.caption(f"Indicative only. On leave-one-out tests this method picks a country's own cluster {acc_pct}% of the time ({top2_pct}% within the top two).")
-    st.caption("Short, generic or non-constitutional text will land in the catch-all cluster more often.")
+    st.caption(
+        "This shows which cluster centre your text is closest to and which preambles it resembles. "
+        "It describes wording and drafting tradition, not politics. "
+        "Clusters overlap (overall silhouette 0.16), so treat the result as a guide, not a verdict. "
+        "Short, generic or non-constitutional text will land in the catch-all cluster more often."
+    )
 
     if "preamble_input" not in st.session_state:
         st.session_state["preamble_input"] = ""
@@ -431,10 +432,10 @@ with tab_predict:
         st.session_state["mask_name_input"] = ""
 
     col_btn1, col_btn2 = st.columns(2)
-    if col_btn1.button("Load US Constitution Preamble"):
+    if col_btn1.button("Load US Constitution Preamble", key="btn_us"):
         st.session_state["preamble_input"] = US_SAMPLE
         st.session_state["mask_name_input"] = "United States of America"
-    if col_btn2.button("Load Islamic Republic Preamble Sample"):
+    if col_btn2.button("Load Islamic Republic Preamble Sample", key="btn_islamic"):
         st.session_state["preamble_input"] = ISLAMIC_SAMPLE
         st.session_state["mask_name_input"] = ""
 
@@ -449,10 +450,13 @@ with tab_predict:
     )
 
     if st.button("Classify", type="primary", key="classify_btn"):
-        word_count = len(user_text.strip().split())
-        if word_count < 30:
-            st.warning(f"Text contains only {word_count} words. Please enter at least 30 words for reliable classification.")
+        words = user_text.strip().split()
+        word_count = len(words)
+        if word_count == 0:
+            st.warning("Please enter some text to classify.")
         else:
+            if word_count < 30:
+                st.warning(f"Short text ({word_count} words). Minimum 30 words recommended for reliable classification.")
             try:
                 model = get_embedding_model()
                 import src.preamble_model as pm
@@ -498,7 +502,15 @@ with tab_predict:
 with tab_method:
     st.subheader("Methodology, Validation and Limitations")
 
-    st.markdown("""
+    n_loo_correct = int(round(val_data["loo_accuracy"] * val_data["n"]))
+    consistency_note = (
+        f"Consistency check: when each country is left out of its own cluster centre, "
+        f"nearest-centre assignment reproduces the stored label for {n_loo_correct} of 158 countries. "
+        f"This is expected, because the clusters were found in the same space; "
+        f"it does not show that the groups are natural categories."
+    )
+
+    st.markdown(f"""
 ### Data
 This dataset covers constitutional texts for 193 sovereign countries:
 - **158 clustered preambles**: Texts containing sufficient substantive wording for comparative sentence embedding.
@@ -539,6 +551,7 @@ Rule rating: strong if coverage >= 60% and precision >= 50%, weak if coverage < 
 - **Overall Silhouette**: Overall cosine silhouette score is 0.16 (indicating weak global geometric separation).
 - **Consensus Reproducibility**: Single KMeans runs agree with each other at ARI 0.56 to 0.71 but the consensus is reproducible across split halves at ARI 0.96.
 - **Continental Alignment**: Against continent the clusters have ARI 0.30 and leave-one-out accuracy 46% versus 19% for always guessing the largest cluster.
+- **Consistency Check**: {consistency_note}
 - **Opening Formulas**:
   - 12 of 18 "Whereas" preambles are in the Commonwealth cluster.
   - 10 of 16 "In the name of" preambles are in the Islamic and Arab cluster.
