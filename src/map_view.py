@@ -3,6 +3,7 @@ src/map_view.py
 Modular map building and country card rendering functions for PreambleMap.
 """
 
+import html
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
@@ -15,8 +16,8 @@ COLOR_MAP = {
     "Commonwealth 'Whereas'": "#CC79A7",
     "Islamic & Arab Identity": "#E69F00",
     "Struggle & Socialism (mostly Asia)": "#56B4E9",
-    "No preamble in dataset": "#B0B0B0",
-    "Formula only (too short)": "#D9D9D9"
+    "No preamble in dataset": "#9A9A9A",
+    "Formula only (too short)": "#CFCFCF"
 }
 
 CATEGORY_ORDER = [
@@ -40,27 +41,39 @@ ALIASES = {
 REVERSE_ALIASES = {v: k for k, v in ALIASES.items()}
 
 
+def fit_label(row):
+    """
+    Computes qualitative fit label from boundary_flag and conf_sub.
+    """
+    if row.get("boundary_flag") is True:
+        return "Borderline"
+    conf = row.get("conf_sub")
+    if pd.notna(conf) and conf >= 0.75:
+        return "Clear"
+    return "Moderate"
+
+
 def build_hover_text(row):
-    conf = f"{row['conf_sub']:.3f}" if pd.notna(row['conf_sub']) else "N/A"
-    ru = str(row['runnerup_label']) if pd.notna(row['runnerup_label']) else "None"
-    b_val = "Yes" if row['boundary_flag'] is True else ("No" if row['boundary_flag'] is False else "N/A")
-    return (
-        f"<b>{row['Country']}</b><br>"
-        f"Label: {row['map_category']}<br>"
-        f"Confidence: {conf}<br>"
-        f"Boundary: {b_val}<br>"
-        f"Runner-up: {ru}"
-    )
+    """
+    Builds clean tooltip without internal variable names.
+    """
+    country = row["Country"]
+    cat = row["category"]
+    if cat == "clustered":
+        label = row["cluster_label"]
+        fit = fit_label(row)
+        return f"<b>{country}</b><br>Group: {label}<br>Fit: {fit}"
+    else:
+        label = row["map_category"]
+        return f"<b>{country}</b><br>Group: {label}"
 
 
 def prepare_map_data(world_gdf, countries_df):
     """
     Prepares merged geographic data excluding Antarctica with hover text.
     """
-    # Drop Antarctica
     world = world_gdf[world_gdf["NAME"] != "Antarctica"].copy()
 
-    # Assign map category
     def get_map_category(r):
         if r["category"] == "no_preamble_in_dataset":
             return "No preamble in dataset"
@@ -78,6 +91,52 @@ def prepare_map_data(world_gdf, countries_df):
     merged["hover_text"] = merged.apply(build_hover_text, axis=1)
 
     return world, merged
+
+
+def country_from_map_state(map_state, ne_to_country):
+    """
+    Parses Plotly chart selection state to extract (country, token) or (None, None).
+    """
+    if not map_state or not isinstance(map_state, dict):
+        return None, None
+    sel = map_state.get("selection")
+    if not sel or not isinstance(sel, dict):
+        return None, None
+    points = sel.get("points")
+    if not points or not isinstance(points, (list, tuple)) or len(points) == 0:
+        return None, None
+
+    pt = points[0]
+    if not isinstance(pt, dict):
+        return None, None
+
+    curve_number = pt.get("curve_number")
+    point_index = pt.get("point_index")
+    loc = pt.get("location")
+    cdata = pt.get("customdata")
+
+    # If location is present, take location if in ne_to_country
+    if loc is not None:
+        if loc in ne_to_country:
+            country = ne_to_country[loc]
+            token = (curve_number, point_index, loc)
+            return country, token
+        else:
+            return None, None
+
+    # Otherwise, check customdata
+    cdata_str = None
+    if isinstance(cdata, str):
+        cdata_str = cdata
+    elif isinstance(cdata, (list, tuple)) and len(cdata) == 1 and isinstance(cdata[0], str):
+        cdata_str = cdata[0]
+
+    if cdata_str is not None:
+        if cdata_str in ne_to_country.values():
+            token = (curve_number, point_index, cdata_str)
+            return cdata_str, token
+
+    return None, None
 
 
 def build_map(
@@ -109,6 +168,13 @@ def build_map(
 
         color = COLOR_MAP[cat]
 
+        if cat == "Formula only (too short)":
+            line_color = "#6E6E6E"
+            line_width = 1.2
+        else:
+            line_color = "#5A5346"
+            line_width = 0.4
+
         fig.add_trace(go.Choropleth(
             name=cat,
             locations=cat_df["NAME"],
@@ -118,12 +184,14 @@ def build_map(
             colorscale=[[0, color], [1, color]],
             showscale=False,
             marker=dict(
-                line=dict(color="#444444", width=0.5),
+                line=dict(color=line_color, width=line_width),
                 opacity=op
             ),
+            selected=dict(marker=dict(opacity=op)),
+            unselected=dict(marker=dict(opacity=op)),
             customdata=cat_df["hover_text"],
             hovertemplate="%{customdata}<extra></extra>",
-            showlegend=True
+            showlegend=False
         ))
 
     # Small states markers (< 10,000 sq km)
@@ -137,15 +205,18 @@ def build_map(
                     lon=cat_small["rep_lon"],
                     lat=cat_small["rep_lat"],
                     text=cat_small["hover_text"],
+                    customdata=cat_small["Country"],
                     hoverinfo="text",
                     showlegend=False,
                     mode="markers",
                     marker=dict(
-                        size=7,
+                        size=6,
                         color=COLOR_MAP[cat],
                         opacity=op,
-                        line=dict(width=1, color="#222222")
-                    )
+                        line=dict(width=0.5, color="#1F1B16")
+                    ),
+                    selected=dict(marker=dict(opacity=op)),
+                    unselected=dict(marker=dict(opacity=op))
                 ))
 
     # Boundary markers
@@ -156,6 +227,7 @@ def build_map(
                 lon=boundary_countries["rep_lon"],
                 lat=boundary_countries["rep_lat"],
                 text=boundary_countries["hover_text"],
+                customdata=boundary_countries["Country"],
                 hoverinfo="text",
                 showlegend=False,
                 mode="markers",
@@ -163,7 +235,9 @@ def build_map(
                     size=11,
                     symbol="circle-open",
                     line=dict(width=2, color="#111111")
-                )
+                ),
+                selected=dict(marker=dict(opacity=1.0)),
+                unselected=dict(marker=dict(opacity=1.0))
             ))
 
     # Selected country highlight trace
@@ -182,9 +256,11 @@ def build_map(
                 colorscale=[[0, sel_color], [1, sel_color]],
                 showscale=False,
                 marker=dict(
-                    line=dict(color="white", width=3),
+                    line=dict(color="#1F1B16", width=3),
                     opacity=1.0
                 ),
+                selected=dict(marker=dict(opacity=1.0)),
+                unselected=dict(marker=dict(opacity=1.0)),
                 customdata=sel_row["hover_text"],
                 hovertemplate="%{customdata}<extra></extra>",
                 showlegend=False
@@ -193,92 +269,153 @@ def build_map(
     fig.update_geos(
         projection_type="natural earth",
         showcountries=True,
-        countrycolor="#bbbbbb",
+        countrycolor="#5A5346",
         showcoastlines=True,
-        coastlinecolor="#cccccc",
+        coastlinecolor="#5A5346",
         showland=True,
-        landcolor="#EDEDED",
+        landcolor="#F1ECDD",
         showocean=True,
-        oceancolor="#DCE9F5",
+        oceancolor="#DDE6EC",
+        bgcolor="rgba(0,0,0,0)",
+        showframe=False,
         lataxis_range=[-58, 85]
     )
 
     fig.update_layout(
-        height=600,
+        height=560,
         paper_bgcolor="rgba(0,0,0,0)",
-        margin=dict(l=0, r=0, t=10, b=0),
-        legend=dict(
-            title=dict(text="Categories"),
-            orientation="h",
-            yanchor="bottom",
-            y=-0.25,
-            xanchor="center",
-            x=0.5
-        )
+        plot_bgcolor="rgba(0,0,0,0)",
+        margin=dict(l=0, r=0, t=0, b=0),
+        showlegend=False
     )
 
     return fig
 
 
+def render_legend(countries_df):
+    """
+    Renders custom HTML legend for the right panel in Map tab.
+    """
+    lines = []
+    lines.append('<div style="line-height:1.9; font-size:14px;">')
+    lines.append('<div style="font-weight:bold; font-size:16px; margin-bottom:6px;">Groups</div>')
+    for c in range(7):
+        subset = countries_df[countries_df["final_cluster"] == c]
+        label = subset["cluster_label"].iloc[0]
+        count = len(subset)
+        color = COLOR_MAP[label]
+        escaped_label = html.escape(label)
+        lines.append(
+            f'<div><span style="display:inline-block; width:14px; height:14px; background-color:{color}; border:1px solid #1F1B16; margin-right:8px; vertical-align:middle;"></span>{escaped_label} ({count})</div>'
+        )
+    lines.append('<div style="font-size:12px; color:#666; margin-top:8px; margin-bottom:2px;">Not clustered</div>')
+    for cat, label_str in [("no_preamble_in_dataset", "No preamble in dataset"), ("formula_only", "Formula only (too short)")]:
+        count = int((countries_df["category"] == cat).sum())
+        color = COLOR_MAP[label_str]
+        escaped_label = html.escape(label_str)
+        lines.append(
+            f'<div><span style="display:inline-block; width:14px; height:14px; background-color:{color}; border:1px solid #1F1B16; margin-right:8px; vertical-align:middle;"></span>{escaped_label} ({count})</div>'
+        )
+    lines.append('</div>')
+    legend_html = "".join(lines)
+    st.markdown(legend_html, unsafe_allow_html=True)
+    return legend_html
+
+
 def render_country_card(row, countries_df):
     """
-    Renders structured country card extracted from former Country tab.
+    Renders compact country card without internal variable names.
     """
     selected_country = row["Country"]
     cat = row["category"]
 
-    if pd.notna(row["note"]) and str(row["note"]).strip():
-        st.info(f"**Note:** {row['note']}")
-    if pd.notna(row["source_note"]) and str(row["source_note"]).strip():
-        st.warning(f"**Source Note:** {row['source_note']}")
+    if cat == "clustered":
+        clab = row["cluster_label"]
+        color = COLOR_MAP.get(clab, "#9A9A9A")
+    else:
+        color = "#9A9A9A"
+
+    chip = f"<span style='display:inline-block; width:14px; height:14px; background-color:{color}; border-radius:3px; vertical-align:middle; margin-right:8px;'></span>"
+    st.markdown(f"### {chip}{selected_country}", unsafe_allow_html=True)
+
+    if pd.notna(row.get("note")) and str(row["note"]).strip():
+        st.info(str(row["note"]))
+    if pd.notna(row.get("source_note")) and str(row["source_note"]).strip():
+        st.warning(str(row["source_note"]))
+
+    continent = str(row.get("continent", "")).strip() if pd.notna(row.get("continent")) else ""
 
     if cat == "clustered":
         clab = row["cluster_label"]
-        color = COLOR_MAP.get(clab, "#888888")
-        chip = f"<span style='display:inline-block; width:14px; height:14px; background-color:{color}; border-radius:3px; vertical-align:middle; margin-right:6px;'></span>"
+        fit = fit_label(row)
+        conf = float(row["conf_sub"]) if pd.notna(row.get("conf_sub")) else 0.0
+        ru_label = str(row["runnerup_label"]) if pd.notna(row.get("runnerup_label")) else "None"
 
-        st.markdown(f"### {chip}{selected_country} - {clab}", unsafe_allow_html=True)
+        raw_op = str(row.get("opening_type", ""))
+        if raw_op == "we_the_people":
+            op_display = "We the people..."
+        elif raw_op == "whereas":
+            op_display = "Whereas..."
+        elif raw_op == "in_the_name_of":
+            op_display = "In the name of..."
+        else:
+            op_display = "Other opening"
 
-        c1, c2, c3 = st.columns(3)
-        c1.markdown(f"**Category:** {cat}")
-        c1.markdown(f"**Continent:** {row['continent']}")
-        c1.markdown(f"**Word Count:** {row['extracted_words']}")
+        words = row.get("extracted_words")
 
-        c2.markdown(f"**Confidence (conf_sub):** {row['conf_sub']:.4f}")
-        c2.markdown(f"**Boundary Case:** {'Yes' if row['boundary_flag'] else 'No'}")
-        c2.markdown(f"**Opening Type:** {row['opening_type']}")
+        st.markdown(f"Group: {clab}")
+        st.markdown(
+            f"Fit: {fit} ({conf:.2f})",
+            help="How consistently this country lands in this group across repeated clustering runs. Borderline means it sits close to another group."
+        )
+        st.markdown(f"Next closest group: {ru_label}")
+        st.markdown(f"Opens with: {op_display}")
+        st.markdown(f"Length: {words} words")
+        if continent:
+            st.markdown(f"Region: {continent}")
 
-        ru_score_str = f"{row['runnerup_score']:.4f}" if pd.notna(row['runnerup_score']) else "N/A"
-        c3.markdown(f"**Runner-up Cluster:** {row['runnerup_label']}")
-        c3.markdown(f"**Runner-up Score:** {ru_score_str}")
+        with st.expander("Read the preamble"):
+            st.write(row["preamble_text"] if pd.notna(row.get("preamble_text")) else "")
 
-        with st.expander("Constitutional Preamble Text"):
-            st.write(row["preamble_text"])
-
-        st.markdown("#### 5 Nearest Preambles (Cosine Similarity on C_c)")
+        st.markdown(
+            "**Most similar preambles**",
+            help="Similarity of wording after each country's own name is masked. 1.00 would be identical."
+        )
         neighbors = []
         for i in range(1, 6):
             nbr = row[f"neighbor_{i}"]
-            sim = row[f"sim_{i}"]
+            sim = float(row[f"sim_{i}"])
             nbr_row = countries_df[countries_df["Country"] == nbr]
-            nbr_label = nbr_row["cluster_label"].iloc[0] if len(nbr_row) > 0 and pd.notna(nbr_row["cluster_label"].iloc[0]) else "Unclustered"
+            if len(nbr_row) > 0 and pd.notna(nbr_row["cluster_label"].iloc[0]):
+                nbr_group = str(nbr_row["cluster_label"].iloc[0])
+            else:
+                nbr_group = "Not clustered"
             neighbors.append({
-                "Rank": i,
                 "Country": nbr,
-                "Cluster": nbr_label,
-                "Cosine Similarity": f"{sim:.4f}"
+                "Group": nbr_group,
+                "Similarity": sim
             })
-        st.dataframe(pd.DataFrame(neighbors), use_container_width=True, hide_index=True)
+        st.dataframe(
+            pd.DataFrame(neighbors),
+            column_config={
+                "Similarity": st.column_config.ProgressColumn(
+                    min_value=0,
+                    max_value=1,
+                    format="%.2f"
+                )
+            },
+            hide_index=True,
+            use_container_width=True
+        )
 
     else:
-        st.markdown(f"### {selected_country}")
-        st.markdown(f"**Category:** {cat}")
-        st.markdown(f"**Continent:** {row['continent']}")
-        st.markdown(f"**Word Count:** {row['extracted_words']}")
-        st.markdown(f"**Opening Type:** {row['opening_type']}")
+        st.markdown("Group: Not clustered")
+        if continent:
+            st.markdown(f"Region: {continent}")
+        if cat == "formula_only":
+            words = row.get("extracted_words")
+            st.markdown(f"Length: {words} words")
 
-        with st.expander("Constitutional Text in Dataset"):
-            if cat == "no_preamble_in_dataset":
-                st.write("")
-            else:
-                st.write(row["preamble_text"] if pd.notna(row["preamble_text"]) else "")
+        if cat != "no_preamble_in_dataset":
+            with st.expander("Read the preamble"):
+                st.write(row["preamble_text"] if pd.notna(row.get("preamble_text")) else "")

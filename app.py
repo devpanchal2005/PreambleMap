@@ -16,7 +16,9 @@ from src.map_view import (
     ALIASES,
     REVERSE_ALIASES,
     build_map,
-    render_country_card
+    render_country_card,
+    country_from_map_state,
+    render_legend
 )
 
 # Page configuration with wide layout and collapsed sidebar
@@ -114,8 +116,11 @@ for c in countries_df["Country"]:
     ne_to_country[ne_name] = c
 
 # Application Header
-st.title("PreambleMap: Clustering Constitutional Preambles by Their Wording")
-st.markdown("Labels describe the wording and drafting tradition of preambles. They are not claims about a country's politics or values.")
+st.title("PreambleMap")
+st.caption(
+    "Clustering the wording of 193 constitutional preambles.\n\n"
+    "Labels describe the wording and drafting tradition of preambles. They are not claims about a country's politics or values."
+)
 
 # Navigation tabs (Country tab removed, country card embedded in Map tab)
 tab_map, tab_clusters, tab_predict, tab_method = st.tabs([
@@ -130,41 +135,35 @@ tab_map, tab_clusters, tab_predict, tab_method = st.tabs([
 # -------------------------------------------------------------
 with tab_map:
     # Synchronize click-to-select from map before rendering selectbox
-    if "map" in st.session_state and st.session_state["map"]:
-        sel_points = st.session_state["map"].get("selection", {}).get("points", [])
-        if sel_points:
-            clicked_loc = sel_points[0].get("location")
-            if clicked_loc in ne_to_country:
-                matched_c = ne_to_country[clicked_loc]
-                if st.session_state.get("find_country") != matched_c:
-                    st.session_state["find_country"] = matched_c
+    clicked_country, click_token = country_from_map_state(st.session_state.get("map"), ne_to_country)
+    if clicked_country is not None and click_token != st.session_state.get("map_last_token"):
+        st.session_state["map_last_token"] = click_token
+        st.session_state["find_country"] = clicked_country
 
-    # Row of three controls above the map
+    # Row 1: Controls above the map
     sorted_country_options = sorted(countries_df["Country"].unique())
-    ctrl_col1, ctrl_col2, ctrl_col3 = st.columns([2.5, 2.5, 1.2])
+    ctrl_col1, ctrl_col2, ctrl_col3 = st.columns([3, 3, 1], vertical_alignment="bottom")
 
     with ctrl_col1:
         find_country = st.selectbox(
             "Find a country",
             options=sorted_country_options,
             index=None,
-            placeholder="Type a country name",
+            placeholder="Search, or click a country on the map",
             key="find_country"
         )
 
     with ctrl_col2:
         focus_options = ["All categories"] + CATEGORY_ORDER
         focus_category = st.selectbox(
-            "Focus on",
+            "Highlight group",
             options=focus_options,
             index=0,
             key="focus_category"
         )
 
     with ctrl_col3:
-        st.write("")
-        st.write("")
-        with st.popover("Display options"):
+        with st.popover("Map options"):
             mark_boundary = st.checkbox(
                 "Mark boundary countries",
                 value=False,
@@ -176,46 +175,37 @@ with tab_map:
                 key="show_small_states"
             )
 
-    # Build and render the map figure
-    fig = build_map(
-        world_gdf=world_gdf,
-        countries_df=countries_df,
-        focus_category=focus_category,
-        selected_country=find_country,
-        mark_boundary=mark_boundary,
-        show_small_states=show_small_states
-    )
+    # Row 2: Map on left, Legend & Country Card on right
+    map_col, right_col = st.columns([2.2, 1], vertical_alignment="top")
 
-    st.plotly_chart(
-        fig,
-        use_container_width=True,
-        theme="streamlit",
-        on_select="rerun",
-        selection_mode="points",
-        key="map"
-    )
+    with map_col:
+        fig = build_map(
+            world_gdf=world_gdf,
+            countries_df=countries_df,
+            focus_category=focus_category,
+            selected_country=find_country,
+            mark_boundary=mark_boundary,
+            show_small_states=show_small_states
+        )
 
-    # Caption under the map
-    st.caption("Blank areas are not in the dataset (for example Greenland). Click a legend entry to hide or show a category.")
+        st.plotly_chart(
+            fig,
+            use_container_width=True,
+            theme="streamlit",
+            on_select="rerun",
+            selection_mode="points",
+            key="map"
+        )
 
-    # Show country card if a country is selected
-    if find_country is not None:
-        row = countries_df[countries_df["Country"] == find_country].iloc[0]
-        render_country_card(row, countries_df)
+        st.caption("Blank areas are not in the dataset (for example Greenland).")
 
-    # Category counts table
-    st.subheader("Category Distribution")
-    counts_series = countries_df["map_category"].value_counts()
-    table_rows = []
-    for cat in CATEGORY_ORDER:
-        cnt = int(counts_series.get(cat, 0))
-        pct = (cnt / len(countries_df)) * 100.0
-        table_rows.append({
-            "Category": cat,
-            "Count": cnt,
-            "Share": f"{pct:.1f}%"
-        })
-    st.dataframe(pd.DataFrame(table_rows), use_container_width=True, hide_index=True)
+    with right_col:
+        render_legend(countries_df)
+        if find_country is not None:
+            row = countries_df[countries_df["Country"] == find_country].iloc[0]
+            render_country_card(row, countries_df)
+        else:
+            st.caption("Pick a country above, or click one on the map.")
 
 
 # -------------------------------------------------------------
@@ -223,6 +213,36 @@ with tab_map:
 # -------------------------------------------------------------
 with tab_clusters:
     st.subheader("Constitutional Preamble Clusters")
+
+    # Overview table
+    overview_rows = []
+    for c in range(7):
+        c_row = clusters_df[clusters_df["cluster"] == c].iloc[0]
+        n_c = int((countries_df["final_cluster"] == c).sum())
+        overview_rows.append({
+            "Group": c_row["label"],
+            "Countries": n_c,
+            "Rating": c_row["rule_rating"],
+            "Tier": c_row["cohesion_tier"],
+            "Median words": f"{c_row['median_words']:.0f}"
+        })
+    no_preamble_count = int((countries_df["category"] == "no_preamble_in_dataset").sum())
+    formula_count = int((countries_df["category"] == "formula_only").sum())
+    overview_rows.append({
+        "Group": "No preamble in dataset",
+        "Countries": no_preamble_count,
+        "Rating": "",
+        "Tier": "",
+        "Median words": ""
+    })
+    overview_rows.append({
+        "Group": "Formula only (too short)",
+        "Countries": formula_count,
+        "Rating": "",
+        "Tier": "",
+        "Median words": ""
+    })
+    st.dataframe(pd.DataFrame(overview_rows), use_container_width=True, hide_index=True)
 
     for c in range(7):
         c_row = clusters_df[clusters_df["cluster"] == c].iloc[0]
@@ -263,10 +283,12 @@ with tab_clusters:
             st.markdown(f"**Geographic Distribution:** {c_row['continents']}")
 
             # Members sorted by conf_sub
-            members = countries_df[countries_df["final_cluster"] == c].sort_values(by="conf_sub", ascending=False)
-            member_display = members[["Country", "conf_sub", "boundary_flag", "runnerup_label", "extracted_words"]].copy()
-            member_display.columns = ["Country", "Confidence (conf_sub)", "Boundary Flag", "Runner-up Cluster", "Word Count"]
-            st.markdown("**Member Preambles (sorted by confidence):**")
+            members = countries_df[countries_df["final_cluster"] == c].sort_values(by="conf_sub", ascending=False).copy()
+            members["fit_score"] = members["conf_sub"].round(2)
+            members["borderline_str"] = members["boundary_flag"].apply(lambda b: "Yes" if b else "No")
+            member_display = members[["Country", "fit_score", "borderline_str", "runnerup_label", "extracted_words"]].copy()
+            member_display.columns = ["Country", "Fit score", "Borderline", "Next closest group", "Words"]
+            st.markdown("**Member Preambles:**")
             st.dataframe(member_display, use_container_width=True, hide_index=True)
 
     strength_note = clusters_df["strength_note"].iloc[0]
