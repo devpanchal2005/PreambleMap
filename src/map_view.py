@@ -139,6 +139,37 @@ def country_from_map_state(map_state, ne_to_country):
     return None, None
 
 
+def map_chart_key(session):
+    """
+    Returns rotating Plotly chart key based on map_gen.
+    """
+    return f"map_{session.get('map_gen', 0)}"
+
+
+def sync_map_click(session, ne_to_country):
+    """
+    Synchronizes Plotly map point selection into session state.
+    Never raises.
+    """
+    try:
+        current_key = map_chart_key(session)
+        state = session.get(current_key)
+        country, token = country_from_map_state(state, ne_to_country)
+        if country is not None and token != session.get("map_last_token"):
+            session["map_last_token"] = token
+            session["find_country"] = country
+    except Exception:
+        pass
+
+
+def reset_map_selection(session):
+    """
+    Rotates chart generation key and resets last click token on user dropdown change.
+    """
+    session["map_gen"] = session.get("map_gen", 0) + 1
+    session["map_last_token"] = None
+
+
 def build_map(
     world_gdf,
     countries_df,
@@ -363,50 +394,53 @@ def render_country_card(row, countries_df):
 
         words = row.get("extracted_words")
 
-        st.markdown(f"Group: {clab}")
-        st.markdown(
-            f"Fit: {fit} ({conf:.2f})",
-            help="How consistently this country lands in this group across repeated clustering runs. Borderline means it sits close to another group."
-        )
-        st.markdown(f"Next closest group: {ru_label}")
-        st.markdown(f"Opens with: {op_display}")
-        st.markdown(f"Length: {words} words")
-        if continent:
-            st.markdown(f"Region: {continent}")
+        c_left, c_right = st.columns([1, 1.3], vertical_alignment="top")
+        with c_left:
+            st.markdown(f"Group: {clab}")
+            st.markdown(
+                f"Fit: {fit} ({conf:.2f})",
+                help="How consistently this country lands in this group across repeated clustering runs. Borderline means it sits close to another group."
+            )
+            st.markdown(f"Next closest group: {ru_label}")
+            st.markdown(f"Opens with: {op_display}")
+            st.markdown(f"Length: {words} words")
+            if continent:
+                st.markdown(f"Region: {continent}")
 
-        with st.expander("Read the preamble"):
-            st.write(row["preamble_text"] if pd.notna(row.get("preamble_text")) else "")
+            with st.expander("Read the preamble"):
+                st.write(row["preamble_text"] if pd.notna(row.get("preamble_text")) else "")
 
-        st.markdown(
-            "**Most similar preambles**",
-            help="Similarity of wording after each country's own name is masked. 1.00 would be identical."
-        )
-        neighbors = []
-        for i in range(1, 6):
-            nbr = row[f"neighbor_{i}"]
-            sim = float(row[f"sim_{i}"])
-            nbr_row = countries_df[countries_df["Country"] == nbr]
-            if len(nbr_row) > 0 and pd.notna(nbr_row["cluster_label"].iloc[0]):
-                nbr_group = str(nbr_row["cluster_label"].iloc[0])
-            else:
-                nbr_group = "Not clustered"
-            neighbors.append({
-                "Country": nbr,
-                "Group": nbr_group,
-                "Similarity": sim
-            })
-        st.dataframe(
-            pd.DataFrame(neighbors),
-            column_config={
-                "Similarity": st.column_config.ProgressColumn(
-                    min_value=0,
-                    max_value=1,
-                    format="%.2f"
-                )
-            },
-            hide_index=True,
-            use_container_width=True
-        )
+        with c_right:
+            st.markdown(
+                "**Most similar preambles**",
+                help="Similarity of wording after each country's own name is masked. 1.00 would be identical."
+            )
+            neighbors = []
+            for i in range(1, 6):
+                nbr = row[f"neighbor_{i}"]
+                sim = float(row[f"sim_{i}"])
+                nbr_row = countries_df[countries_df["Country"] == nbr]
+                if len(nbr_row) > 0 and pd.notna(nbr_row["cluster_label"].iloc[0]):
+                    nbr_group = str(nbr_row["cluster_label"].iloc[0])
+                else:
+                    nbr_group = "Not clustered"
+                neighbors.append({
+                    "Country": nbr,
+                    "Group": nbr_group,
+                    "Similarity": sim
+                })
+            st.dataframe(
+                pd.DataFrame(neighbors),
+                column_config={
+                    "Similarity": st.column_config.ProgressColumn(
+                        min_value=0,
+                        max_value=1,
+                        format="%.2f"
+                    )
+                },
+                hide_index=True,
+                use_container_width=True
+            )
 
     else:
         st.markdown("Group: Not clustered")

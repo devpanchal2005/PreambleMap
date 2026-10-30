@@ -17,8 +17,10 @@ from src.map_view import (
     REVERSE_ALIASES,
     build_map,
     render_country_card,
-    country_from_map_state,
-    render_legend
+    render_legend,
+    map_chart_key,
+    sync_map_click,
+    reset_map_selection
 )
 
 # Page configuration with wide layout and collapsed sidebar
@@ -134,11 +136,12 @@ tab_map, tab_clusters, tab_predict, tab_method = st.tabs([
 # TAB 1: MAP
 # -------------------------------------------------------------
 with tab_map:
+    # Initialize session state for map rotation and synchronization
+    st.session_state.setdefault("map_gen", 0)
+    st.session_state.setdefault("map_last_token", None)
+
     # Synchronize click-to-select from map before rendering selectbox
-    clicked_country, click_token = country_from_map_state(st.session_state.get("map"), ne_to_country)
-    if clicked_country is not None and click_token != st.session_state.get("map_last_token"):
-        st.session_state["map_last_token"] = click_token
-        st.session_state["find_country"] = clicked_country
+    sync_map_click(st.session_state, ne_to_country)
 
     # Row 1: Controls above the map
     sorted_country_options = sorted(countries_df["Country"].unique())
@@ -150,7 +153,9 @@ with tab_map:
             options=sorted_country_options,
             index=None,
             placeholder="Search, or click a country on the map",
-            key="find_country"
+            key="find_country",
+            on_change=reset_map_selection,
+            args=(st.session_state,)
         )
 
     with ctrl_col2:
@@ -175,7 +180,7 @@ with tab_map:
                 key="show_small_states"
             )
 
-    # Row 2: Map on left, Legend & Country Card on right
+    # Row 2: Map on left, Legend on right
     map_col, right_col = st.columns([2.2, 1], vertical_alignment="top")
 
     with map_col:
@@ -194,18 +199,19 @@ with tab_map:
             theme="streamlit",
             on_select="rerun",
             selection_mode="points",
-            key="map"
+            key=map_chart_key(st.session_state)
         )
 
         st.caption("Blank areas are not in the dataset (for example Greenland).")
 
     with right_col:
         render_legend(countries_df)
-        if find_country is not None:
-            row = countries_df[countries_df["Country"] == find_country].iloc[0]
-            render_country_card(row, countries_df)
-        else:
-            st.caption("Pick a country above, or click one on the map.")
+        st.caption("Search above, or click a country on the map to see its details below the map.")
+
+    # Row 3: Country Card below the map (full width)
+    if find_country is not None:
+        row = countries_df[countries_df["Country"] == find_country].iloc[0]
+        render_country_card(row, countries_df)
 
 
 # -------------------------------------------------------------
