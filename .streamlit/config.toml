@@ -1,0 +1,24 @@
+[theme]
+base = "light"
+primaryColor = "#7A1F2B"
+backgroundColor = "#FAF6EB"
+secondaryBackgroundColor = "#F0E9D6"
+textColor = "#1F1B16"
+linkColor = "#1F3A5F"
+linkUnderline = true
+borderColor = "#CFC6AE"
+showWidgetBorder = true
+baseRadius = "2px"
+buttonRadius = "2px"
+baseFontSize = 17
+dataframeBorderColor = "#CFC6AE"
+dataframeHeaderBackgroundColor = "#E6DDC4"
+font = "'EB Garamond':https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+headingFont = "'Playfair Display':https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap"
+codeFont = "monospace"
+
+[client]
+toolbarMode = "minimal"
+
+[browser]
+gatherUsageStats = false
