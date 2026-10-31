@@ -305,83 +305,101 @@ with tab_clusters:
 # TAB 3: TRY YOUR OWN TEXT
 # -------------------------------------------------------------
 with tab_predict:
-    st.subheader("Classify a Preamble Text")
+    def classify_enabled() -> bool:
+        import os
+        env_val = os.environ.get("PREAMBLEMAP_CLASSIFY")
+        if env_val is not None:
+            return env_val.strip().lower() not in {"0", "false", "off", "no"}
 
-    st.caption(
-        "This shows which cluster centre your text is closest to and which preambles it resembles. "
-        "It describes wording and drafting tradition, not politics. "
-        "Clusters overlap (overall silhouette 0.16), so treat the result as a guide, not a verdict. "
-        "Short, generic or non-constitutional text will land in the catch-all cluster more often."
-    )
+        try:
+            secret_val = st.secrets.get("PREAMBLEMAP_CLASSIFY")
+            if secret_val is not None:
+                return str(secret_val).strip().lower() not in {"0", "false", "off", "no"}
+        except Exception:
+            pass
 
-    if "preamble_input" not in st.session_state:
-        st.session_state["preamble_input"] = ""
-    if "mask_name_input" not in st.session_state:
-        st.session_state["mask_name_input"] = ""
+        return True
 
-    col_btn1, col_btn2 = st.columns(2)
-    if col_btn1.button("Load US Constitution Preamble", key="btn_us"):
-        st.session_state["preamble_input"] = US_SAMPLE
-        st.session_state["mask_name_input"] = "United States of America"
-    if col_btn2.button("Load Islamic Republic Preamble Sample", key="btn_islamic"):
-        st.session_state["preamble_input"] = ISLAMIC_SAMPLE
-        st.session_state["mask_name_input"] = ""
+    if not classify_enabled():
+        st.info("The text classifier is switched off on this deployment to save memory. Run the app locally to try your own text; see the README.")
+    else:
+        st.subheader("Classify a Preamble Text")
 
-    user_text = st.text_area(
-        "Enter preamble text to analyze:",
-        key="preamble_input",
-        height=160
-    )
-    mask_input = st.text_input(
-        "Country name to mask (optional):",
-        key="mask_name_input"
-    )
+        st.caption(
+            "This shows which cluster centre your text is closest to and which preambles it resembles. "
+            "It describes wording and drafting tradition, not politics. "
+            "Clusters overlap (overall silhouette 0.16), so treat the result as a guide, not a verdict. "
+            "Short, generic or non-constitutional text will land in the catch-all cluster more often."
+        )
 
-    if st.button("Classify", type="primary", key="classify_btn"):
-        words = user_text.strip().split()
-        word_count = len(words)
-        if word_count == 0:
-            st.warning("Please enter some text to classify.")
-        else:
-            if word_count < 30:
-                st.warning(f"Short text ({word_count} words). Minimum 30 words recommended for reliable classification.")
-            try:
-                model = get_embedding_model()
-                import src.preamble_model as pm
-                res = pm.classify_text(
-                    model,
-                    assets,
-                    user_text,
-                    mask_name=mask_input.strip() if mask_input.strip() else None
-                )
+        if "preamble_input" not in st.session_state:
+            st.session_state["preamble_input"] = ""
+        if "mask_name_input" not in st.session_state:
+            st.session_state["mask_name_input"] = ""
 
-                st.markdown("### Classification Results")
+        col_btn1, col_btn2 = st.columns(2)
+        if col_btn1.button("Load US Constitution Preamble", key="btn_us"):
+            st.session_state["preamble_input"] = US_SAMPLE
+            st.session_state["mask_name_input"] = "United States of America"
+        if col_btn2.button("Load Islamic Republic Preamble Sample", key="btn_islamic"):
+            st.session_state["preamble_input"] = ISLAMIC_SAMPLE
+            st.session_state["mask_name_input"] = ""
 
-                top1_id, top1_label, top1_sim = res["top_clusters"][0]
-                top2_id, top2_label, top2_sim = res["top_clusters"][1]
+        user_text = st.text_area(
+            "Enter preamble text to analyze:",
+            key="preamble_input",
+            height=160
+        )
+        mask_input = st.text_input(
+            "Country name to mask (optional):",
+            key="mask_name_input"
+        )
 
-                c1, c2 = st.columns(2)
-                c1.metric(f"Top 1: {top1_label}", f"{top1_sim:.4f}")
-                c2.metric(f"Top 2: {top2_label}", f"{top2_sim:.4f}")
+        if st.button("Classify", type="primary", key="classify_btn"):
+            words = user_text.strip().split()
+            word_count = len(words)
+            if word_count == 0:
+                st.warning("Please enter some text to classify.")
+            else:
+                if word_count < 30:
+                    st.warning(f"Short text ({word_count} words). Minimum 30 words recommended for reliable classification.")
+                try:
+                    model = get_embedding_model()
+                    import src.preamble_model as pm
+                    res = pm.classify_text(
+                        model,
+                        assets,
+                        user_text,
+                        mask_name=mask_input.strip() if mask_input.strip() else None
+                    )
 
-                if res["close_gap_flag"]:
-                    st.warning(f"Close call: The similarity gap between top two clusters ({res['gap']:.4f}) is below 0.03.")
+                    st.markdown("### Classification Results")
 
-                st.markdown("#### 5 Nearest Preambles in Dataset")
-                near_data = []
-                for rank, (c_name, c_sim) in enumerate(res["top_countries"], start=1):
-                    c_row = countries_df[countries_df["Country"] == c_name]
-                    c_label = c_row["cluster_label"].iloc[0] if len(c_row) > 0 and pd.notna(c_row["cluster_label"].iloc[0]) else "Unclustered"
-                    near_data.append({
-                        "Rank": rank,
-                        "Country": c_name,
-                        "Cluster": c_label,
-                        "Cosine Similarity": f"{c_sim:.4f}"
-                    })
-                st.dataframe(pd.DataFrame(near_data), width="stretch", hide_index=True)
+                    top1_id, top1_label, top1_sim = res["top_clusters"][0]
+                    top2_id, top2_label, top2_sim = res["top_clusters"][1]
 
-            except Exception:
-                st.error("This feature could not load the model on this machine")
+                    c1, c2 = st.columns(2)
+                    c1.metric(f"Top 1: {top1_label}", f"{top1_sim:.4f}")
+                    c2.metric(f"Top 2: {top2_label}", f"{top2_sim:.4f}")
+
+                    if res["close_gap_flag"]:
+                        st.warning(f"Close call: The similarity gap between top two clusters ({res['gap']:.4f}) is below 0.03.")
+
+                    st.markdown("#### 5 Nearest Preambles in Dataset")
+                    near_data = []
+                    for rank, (c_name, c_sim) in enumerate(res["top_countries"], start=1):
+                        c_row = countries_df[countries_df["Country"] == c_name]
+                        c_label = c_row["cluster_label"].iloc[0] if len(c_row) > 0 and pd.notna(c_row["cluster_label"].iloc[0]) else "Unclustered"
+                        near_data.append({
+                            "Rank": rank,
+                            "Country": c_name,
+                            "Cluster": c_label,
+                            "Cosine Similarity": f"{c_sim:.4f}"
+                        })
+                    st.dataframe(pd.DataFrame(near_data), width="stretch", hide_index=True)
+
+                except Exception:
+                    st.error("This feature could not load the model on this machine")
 
 
 # -------------------------------------------------------------
