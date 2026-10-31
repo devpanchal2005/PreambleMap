@@ -248,7 +248,7 @@ with tab_clusters:
         "Tier": "",
         "Median words": ""
     })
-    st.dataframe(pd.DataFrame(overview_rows), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(overview_rows), width="stretch", hide_index=True)
 
     for c in range(7):
         c_row = clusters_df[clusters_df["cluster"] == c].iloc[0]
@@ -295,7 +295,7 @@ with tab_clusters:
             member_display = members[["Country", "fit_score", "borderline_str", "runnerup_label", "extracted_words"]].copy()
             member_display.columns = ["Country", "Fit score", "Borderline", "Next closest group", "Words"]
             st.markdown("**Member Preambles:**")
-            st.dataframe(member_display, use_container_width=True, hide_index=True)
+            st.dataframe(member_display, width="stretch", hide_index=True)
 
     strength_note = clusters_df["strength_note"].iloc[0]
     st.caption(f"**Methodology Note:** {strength_note}")
@@ -378,7 +378,7 @@ with tab_predict:
                         "Cluster": c_label,
                         "Cosine Similarity": f"{c_sim:.4f}"
                     })
-                st.dataframe(pd.DataFrame(near_data), use_container_width=True, hide_index=True)
+                st.dataframe(pd.DataFrame(near_data), width="stretch", hide_index=True)
 
             except Exception:
                 st.error("This feature could not load the model on this machine")

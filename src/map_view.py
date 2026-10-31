@@ -407,9 +407,6 @@ def render_country_card(row, countries_df):
             if continent:
                 st.markdown(f"Region: {continent}")
 
-            with st.expander("Read the preamble"):
-                st.write(row["preamble_text"] if pd.notna(row.get("preamble_text")) else "")
-
         with c_right:
             st.markdown(
                 "**Most similar preambles**",
@@ -439,8 +436,11 @@ def render_country_card(row, countries_df):
                     )
                 },
                 hide_index=True,
-                use_container_width=True
+                width="stretch"
             )
+
+        with st.expander("Read the preamble"):
+            st.write(row["preamble_text"] if pd.notna(row.get("preamble_text")) else "")
 
     else:
         st.markdown("Group: Not clustered")
