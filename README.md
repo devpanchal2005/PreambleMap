@@ -4,7 +4,7 @@ An NLP project that groups the preambles of 158 national constitutions by how th
 
 ![PreambleMap: world map coloured by preamble group](docs/screenshot.png)
 
-**Live app:** LIVE_APP_URL_HERE
+**Live app:** [https://preamblemap.streamlit.app/](https://preamblemap.streamlit.app/)
 
 > **Read this first.** The groups describe the wording and drafting tradition of preambles. They are not claims about any country's politics, ideology or quality of governance, and the structure found is weak (see Findings). Whether a country is coloured, grey or blank on the map is a statement about the dataset, not about the country.
 
@@ -31,7 +31,7 @@ An NLP project that groups the preambles of 158 national constitutions by how th
 | Generic Rights & Freedoms (catch-all) | 30 | moderate | loosely defined | Short, generic rights and freedoms wording (median 114 words). Precision is only 19%, so it works as a catch-all. Only 35% of "We the people" openers land here. |
 | African Charter & Unity | 26 | moderate | well-defined | All 26 are in Africa. Preambles cite the African Charter, the Universal Declaration and the "rights of man", and stress national and African unity. |
 | Statehood & History | 25 | moderate | well-defined | Statehood and history language ("statehood" appears in 48% of members vs 2% elsewhere). Central and Eastern Europe, the former USSR, plus Germany, Switzerland and Andorra. |
-| Constituent Assembly & God | 23 | moderate | well-defined | A constituent assembly acting under God ("invoking" in 43% vs 4%). Ibero-American countries, Spain, Portugal and Lusophone Africa. |
+| Constituent Assembly & God | 23 | moderate | well-defined | A constituent assembly acting under God ("invoking" in 43% vs 4%). Mostly Ibero-American countries, Spain, Portugal and Lusophone Africa (19 of 23). The other four are Estonia, Madagascar, South Korea and Suriname. |
 | Commonwealth 'Whereas' | 22 | moderate | loosely defined | "Whereas" drafting (12 of 22 open with it). Six members use none of the group's vocabulary: France, the United Kingdom, Comoros, Marshall Islands, Micronesia and Solomon Islands. |
 | Islamic & Arab Identity | 17 | strong | well-defined | Islamic and Arab identity ("merciful" in 59% vs 0%). Coverage 94%, precision 89%. |
 | Struggle & Socialism (mostly Asia) | 15 | moderate | loosely defined | Struggle and socialist language ("socialist" in 47% vs 4%, "struggle" in 53% vs 15%). Mostly Asia. Japan and South Sudan sit on the boundary. |
